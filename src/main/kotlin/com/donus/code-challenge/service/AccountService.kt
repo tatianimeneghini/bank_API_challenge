@@ -1,5 +1,12 @@
 package com.donus.`code-challenge`.service
 
+import com.donus.`code-challenge`.exception.BankAccountException
+import com.donus.`code-challenge`.exception.DepositException
+import com.donus.`code-challenge`.model.Account
+import com.donus.`code-challenge`.model.Owner
+import com.donus.`code-challenge`.model.financialTransaction.BankDeposit
+import com.donus.`code-challenge`.model.financialTransaction.BankTransfer
+import com.donus.`code-challenge`.repository.AccountRepository
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -8,32 +15,32 @@ import java.util.concurrent.ThreadLocalRandom
 
 @Service
 class AccountService(
-    private val accountRepository: com.donus.`code-challenge`.repository.AccountRepository,
-    private val ownerService: com.donus.`code-challenge`.service.OwnerService,
-    private val financialTransactionsService: com.donus.`code-challenge`.service.FinancialTransactionsService
+    private val accountRepository: AccountRepository,
+    private val ownerService: OwnerService,
+    private val financialTransactionsService: FinancialTransactionsService
 ) {
-    fun getAccountAll(): MutableIterable<com.donus.`code-challenge`.model.Account> =
+    fun getAccountAll(): MutableIterable<Account> =
         accountRepository.findAll()
 
-    fun getAccountById(id: Long): com.donus.`code-challenge`.model.Account? {
+    fun getAccountById(id: Long): Account? {
         return accountRepository.findById(id)
     }
 
-    fun hasAccountExist(owner: com.donus.`code-challenge`.model.Owner) {
+    fun hasAccountExist(owner: Owner) {
         val owner = ownerService.findOwnerByDocument(owner)
         if (owner != null) {
             if (owner.name.isNotEmpty() && owner.document.isNotEmpty())
-                throw com.donus.`code-challenge`.exception.BankAccountException("Account already exists.")
+                throw BankAccountException("Account already exists.")
         }
     }
 
-    fun createAccount(owner: com.donus.`code-challenge`.model.Owner): com.donus.`code-challenge`.model.Account {
+    fun createAccount(owner: Owner): Account {
         hasAccountExist(owner)
         if (owner.name == "")
             throw Exception("The name field is required.")
-        val account = com.donus.`code-challenge`.model.Account(
+        val account = Account(
             id = ThreadLocalRandom.current().nextLong(100000),
-            owner = com.donus.`code-challenge`.model.Owner(
+            owner = Owner(
                 id = ThreadLocalRandom.current().nextLong(100000),
                 document = owner.document,
                 name = owner.name
@@ -45,16 +52,16 @@ class AccountService(
         return accountRepository.save(account)
     }
 
-    fun allowedDeposit(bankDeposit: com.donus.`code-challenge`.model.financialTransaction.BankDeposit): Boolean {
+    fun allowedDeposit(bankDeposit: BankDeposit): Boolean {
         if (bankDeposit.amount < BigDecimal.ZERO)
-            throw com.donus.`code-challenge`.exception.DepositException("Account balance is negative. Contact your agency.")
+            throw DepositException("Account balance is negative. Contact your agency.")
         else if (bankDeposit.amount > BigDecimal("2000.00"))
-            throw com.donus.`code-challenge`.exception.DepositException("Deposit must never exceed R$2000. Contact your agency.")
+            throw DepositException("Deposit must never exceed R$2000. Contact your agency.")
         else
             return true
     }
 
-    fun cashDeposit(bankDeposit: com.donus.`code-challenge`.model.financialTransaction.BankDeposit): ResponseEntity<com.donus.`code-challenge`.model.Account> {
+    fun cashDeposit(bankDeposit: BankDeposit): ResponseEntity<Account> {
         val account = getAccountById(bankDeposit.accountId)
         val allowedDeposit = allowedDeposit(bankDeposit)
         try {
@@ -67,7 +74,7 @@ class AccountService(
         return ResponseEntity.ok(account)
     }
 
-    fun cashTransfer(bankTransfer: com.donus.`code-challenge`.model.financialTransaction.BankTransfer): Map<String, com.donus.`code-challenge`.model.Account?> {
+    fun cashTransfer(bankTransfer: BankTransfer): Map<String, Account?> {
         val accountTo = getAccountById(bankTransfer.accountIdTo)
         val accountFrom = getAccountById(bankTransfer.accountIdFrom)
 

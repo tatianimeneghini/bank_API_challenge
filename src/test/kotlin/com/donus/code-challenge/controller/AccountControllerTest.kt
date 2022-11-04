@@ -1,5 +1,7 @@
 package com.donus.`code-challenge`.controller
 
+import com.donus.`code-challenge`.model.Account
+import com.donus.`code-challenge`.model.Owner
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,9 +24,9 @@ class AccountControllerTest {
 
     private val baseUrl: String = "localhost:8080/account"
     private val accountIdFake: Long = 11
-    private val accountFake1 = com.donus.`code-challenge`.model.Account(
+    private val accountFake1 = Account(
         id = accountIdFake,
-        com.donus.`code-challenge`.model.Owner(
+        Owner(
             id = 111,
             name = "Frodo Bolseiro",
             document = "999.999.999-99"

@@ -1,12 +1,17 @@
 package com.donus.`code-challenge`.controller
 
+import com.donus.`code-challenge`.model.Account
+import com.donus.`code-challenge`.model.Owner
+import com.donus.`code-challenge`.model.financialTransaction.BankDeposit
+import com.donus.`code-challenge`.model.financialTransaction.BankTransfer
+import com.donus.`code-challenge`.service.AccountService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/account/")
 class AccountController(
-    private val accountService: com.donus.`code-challenge`.service.AccountService,
+    private val accountService: AccountService,
 ) {
     @GetMapping
     fun getAll() =
@@ -16,14 +21,14 @@ class AccountController(
     fun getById(@PathVariable id: Long) = accountService.getAccountById(id)
 
     @PostMapping
-    fun createAccount(@RequestBody owner: com.donus.`code-challenge`.model.Owner): ResponseEntity<com.donus.`code-challenge`.model.Account> =
+    fun createAccount(@RequestBody owner: Owner): ResponseEntity<Account> =
         ResponseEntity.ok(accountService.createAccount(owner))
 
     @PatchMapping("deposit")
-    fun cashDeposit(@RequestBody bankDeposit: com.donus.`code-challenge`.model.financialTransaction.BankDeposit) =
+    fun cashDeposit(@RequestBody bankDeposit: BankDeposit) =
         accountService.cashDeposit(bankDeposit)
 
     @PatchMapping("transfer")
-    fun cashTransfer(@RequestBody bankTransfer: com.donus.`code-challenge`.model.financialTransaction.BankTransfer) =
+    fun cashTransfer(@RequestBody bankTransfer: BankTransfer) =
         accountService.cashTransfer(bankTransfer)
 }

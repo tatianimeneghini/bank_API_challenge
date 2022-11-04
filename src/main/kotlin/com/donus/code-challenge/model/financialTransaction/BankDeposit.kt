@@ -7,4 +7,4 @@ class BankDeposit(
     @JsonProperty("account_id")
     override val accountId: Long,
     override val amount: BigDecimal
-) : com.donus.`code-challenge`.model.financialTransaction.FinancialTransaction(accountId, amount)
+) : FinancialTransaction(accountId, amount)

@@ -8,7 +8,7 @@ class DocumentValidate {
             val documentReplaced = document.replace(".", "").replace("-", "")
 
             if (documentReplaced.length < 11)
-                throw com.donus.`code-challenge`.exception.DocumentOwnerException("$document must have at least 11 numbers.")
+                throw DocumentOwnerException("$document must have at least 11 numbers.")
         }
     }
 }
