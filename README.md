@@ -19,8 +19,7 @@ API tem por objetivo o gerenciamento de contas bancárias, com funcionalidade b�
 │   │   ├── utils                   # Camada de validações específicas
 │   │   └── DemoApplication.kt      # Aplicação
 │   ├── test
-│   │   ├── controller
-│   │   ├── service
+│   │   └──controller
 └── ...
 ```   
 
